@@ -6,16 +6,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post('api/review', (req, res) => {
+app.post('/api/review', (req, res) => {
     const { language, code } = req.body;
 
-    if(!code){
+    if(!code||code.trim()===''){
         return res.status(400).json({ error: 'Code is required.' });
     }
 
-    res.status(200).json({ review: 'Fake review for ${language}: Your code looks good!' });
+    res.json({ review: `This is a placeholder review for ${language} code of length ${code.length}.` });
+    console.log(`Server is running on port ${PORT}.`);
 });
-
 
 const PORT = 3000;
 app.listen(PORT, () => {
