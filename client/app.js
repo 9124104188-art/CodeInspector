@@ -17,7 +17,7 @@ form.addEventListener('submit', async (e) => {
         output.textContent = 'Reviewing code...';
         console.log({language, codeLength: code.length});
         try{
-            const response = await fetch('http://localhost:3000/api/review', {
+            const response = await fetch('/api/review', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
