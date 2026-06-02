@@ -17,13 +17,16 @@ form.addEventListener('submit', async (e) => {
         output.textContent = 'Reviewing code...';
         console.log({language, codeLength: code.length});
         try{
-            fetch('http://localhost:3000/api/review', {
+            const response = await fetch('http://localhost:3000/api/review', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ language, code })
         })
+        if(!response.ok){
+            throw new Error('server error: '+response.status);
+        }
 
         const data = await response.json();
         output.textContent = data.review||'No review generated.';
