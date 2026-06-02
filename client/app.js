@@ -3,13 +3,15 @@ const codeInput = document.querySelector('#code-input');
 const languageInput = document.querySelector('#language');
 const output = document.querySelector('#output');
 
-eventListener('submit', async (e) => {
+form.eventListener('submit', async (e) => {
 
-    event.preventDefault();
+    e.preventDefault();
+
+});
 
     const code = codeInput.value;
     const language = languageInput.value;
-    if (!code || !language) {
+    if (!code) {
         output.textContent = 'Please provide both code and language.';
         return;
     }
@@ -19,6 +21,6 @@ eventListener('submit', async (e) => {
     }
 
 
-}
 
-);
+
+
