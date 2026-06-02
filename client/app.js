@@ -9,9 +9,9 @@ form.addEventListener('submit', async (e) => {
 
     const code = codeInput.value;
     const language = languageInput.value;
-    if (code.trim()) {
-        output.textContent = 'Please provide code.';
-        return;
+    if (code.trim()==='') {
+        output.textContent = 'Please paste some code first.';
+        
     }
     else{
         output.textContent = 'Reviewing code...';
