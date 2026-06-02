@@ -14,10 +14,10 @@ app.post('/api/review', (req, res) => {
     }
 
     res.json({ review: `This is a placeholder review for ${language} code of length ${code.length}.` });
-    console.log(`Server is running on port ${PORT}.`);
+    
 });
 
 const PORT = 3000;
 app.listen(PORT, () => {
-    console.log('Server is running on port ${PORT}');
+    console.log(`Server is running on port ${PORT}`);
 });
