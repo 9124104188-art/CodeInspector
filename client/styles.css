@@ -1,0 +1,22 @@
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f0f0;
+    
+}
+.container{
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px;
+}
+form{
+    display: flex;
+    flex-direction:column;
+    gap: 12px;
+}
+textarea,select,button{
+    width: 100%;
+}
+textarea{
+    resize: vertical;
+    padding: 12px;
+}
