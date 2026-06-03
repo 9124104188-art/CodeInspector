@@ -4,7 +4,7 @@ const languageInput = document.querySelector('#language');
 const output = document.querySelector('#output');
 const reviewText = document.querySelector('#review-text');
 const button = form.querySelector('button[type="submit"]');
-button.disabled = True; // Enable the button on page load
+button.disabled = true; // Enable the button on page load
 
 
 form.addEventListener('submit', async (e) => {
@@ -13,12 +13,16 @@ form.addEventListener('submit', async (e) => {
 
     const code = codeInput.value;
     const language = languageInput.value;
+    output.classList.remove('is-error');
+    output.classList.add('is-loading');
+    button.disabled = true; // Disable the button during review
+
     if (code.trim()==='') {
-        output.textContent = 'Please paste some code first.';
+        reviewText.textContent = 'Please paste some code first.';
         
     }
     else{
-        output.textContent = 'Reviewing code...';
+        reviewText.textContent = 'Reviewing code...';
         console.log({language, codeLength: code.length});
         try{
             const response = await fetch('/api/review', {
@@ -33,12 +37,17 @@ form.addEventListener('submit', async (e) => {
         }
 
         const data = await response.json();
-        output.textContent = data.review||'No review generated.';
+        reviewText.textContent = data.review||'No review generated.';
 
         }
         catch(error){
-            output.textContent = 'Error reviewing code. Please try again.';
+            reviewText.textContent = 'Error reviewing code. Please try again.';
             console.error('Error:', error);
+            output.classList.add('is-error');
+        }
+        finally{
+            output.classList.remove('is-loading');
+            button.disabled = false; // Re-enable the button after review
         }
         
         

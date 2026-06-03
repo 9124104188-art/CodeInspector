@@ -30,7 +30,7 @@ label{
 
 textarea,select{
     padding: 12px;
-    boder: 1px solid #cfcfcf;
+    border: 1px solid #cfcfcf;
     border-radius: 8px;
     font-size: 14px;
     background-color: #fff;
@@ -59,10 +59,7 @@ button:disabled{
     background-color: #fff;
 }
 
-.output h2{
-    margin-top: 0 0 8px 0;
-    font-size: 16px;
-}
+.output h2{ margin-top: 0 0 8px 0; }
 
 #review-text{
     margin: 0;
@@ -70,7 +67,7 @@ button:disabled{
     word-break: break-word;
     font-size: 13px;
     line-height: 1.4;
-    font-family: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 }
 
 .output.is-error{
