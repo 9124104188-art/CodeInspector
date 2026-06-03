@@ -19,6 +19,10 @@ form.addEventListener('submit', async (e) => {
 
     if (code.trim()==='') {
         reviewText.textContent = 'Please paste some code first.';
+        output.classList.remove('is-loading');
+        output.classList.add('is-error');
+        button.disabled = false; // Re-enable the button if no code is provided        
+        return;
         
     }
     else{
