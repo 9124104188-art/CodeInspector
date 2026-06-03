@@ -6,6 +6,30 @@ const reviewText = document.querySelector('#review-text');
 const button = form.querySelector('button[type="submit"]');
 button.disabled = false; 
 
+codeInput.addEventListener('input', () => {
+    document.querySelector('#char-count').textContent =
+        `${codeInput.value.length} characters`;
+});
+
+document
+    .querySelector('#code-file')
+    .addEventListener('change', async (e) => {
+
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        const text = await file.text();
+
+        codeInput.value = text;
+
+        document.querySelector('#char-count').textContent =
+            `${text.length} characters`;
+    });
+
+
+
+
 form.addEventListener('submit', async (e) => {
 
     e.preventDefault();
@@ -28,7 +52,7 @@ form.addEventListener('submit', async (e) => {
         reviewText.textContent = 'Reviewing code...';
         console.log({language, codeLength: code.length});
         try{
-            const response = await fetch('/api/review', {
+            const response = await fetch('http://localhost:3000/api/review', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -40,7 +64,7 @@ form.addEventListener('submit', async (e) => {
         }
 
         const data = await response.json();
-        reviewText.textContent = data.review||'No review generated.';
+        reviewText.innerHTML =marked.parse(data.review || 'No review generated.');
 
         }
         catch(error){
@@ -57,6 +81,17 @@ form.addEventListener('submit', async (e) => {
     }
 
 });
+
+document
+    .querySelector('#copy-review')
+    .addEventListener('click', () => {
+
+        navigator.clipboard.writeText(
+            reviewText.innerText
+        );
+
+        alert('Review copied!');
+    });
 
     
 

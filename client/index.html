@@ -6,6 +6,7 @@
     <title>AI Code Reviewer</title>
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
+    
 </head>
 <body>
     
@@ -24,14 +25,22 @@
                         <option value="cpp">C++</option>
                     </select>
                 </label>
-                <button type="submit">Review Code</button>
+
+                <input type="file" id="code-file" accept=".js,.py,.java,.cpp,.c"/>
                 
+                <p id="char-count">0 characters</p>
+
+
+                <button type="submit">Review Code</button>
+                <button type="button" id="copy-review">Copy Review</button>
             </form>
         <section id="output" class="output">
             <h2>Review Output</h2>
-            <pre id="review-text"></pre>
+            <div id="review-text"></div>
         </section>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
 </body>
 </html>

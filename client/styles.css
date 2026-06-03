@@ -78,3 +78,25 @@ button:disabled{
 .output.is-loading{
     opacity: 0.85;
 }
+
+#char-count{
+    margin:0;
+    color:#666;
+    font-size:14px;
+}
+
+#review-text h1,
+#review-text h2,
+#review-text h3{
+    margin-top:16px;
+}
+
+#review-text ul{
+    padding-left:20px;
+}
+
+#review-text code{
+    background:#eee;
+    padding:2px 4px;
+    border-radius:4px;
+}

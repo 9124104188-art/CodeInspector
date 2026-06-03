@@ -25,7 +25,7 @@ if (!process.env.GEMINI_API_KEY) {
 }
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
 // API
 app.post('/api/review', async (req, res) => {
@@ -39,22 +39,33 @@ app.post('/api/review', async (req, res) => {
     const lang = (language || 'unknown').toString().slice(0, 30);
 
     const prompt = `
-You are a senior software engineer doing a code review.
+    You are a senior software engineer.
 
-Language: ${lang}
+    Review the following code.
 
-Please review the code for:
-- bugs / correctness
-- security issues
-- performance concerns
-- readability / maintainability
-- best practices
+    Return the result in Markdown.
 
-Return the review as bullet points, and include short concrete fixes.
+    # Code Quality Score
+    Give a score out of 10.
 
-Code:
-${code}
-`.trim();
+    # Bugs
+
+    # Security Issues
+
+    # Performance Concerns
+
+    # Readability
+
+    # Best Practices
+
+    # Suggested Fixes
+
+    Language:
+    ${lang}
+
+    Code:
+    ${code}
+    `;
 
     const result = await model.generateContent(prompt);
     const reviewText = result.response.text();
