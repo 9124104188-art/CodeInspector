@@ -4,8 +4,7 @@ const languageInput = document.querySelector('#language');
 const output = document.querySelector('#output');
 const reviewText = document.querySelector('#review-text');
 const button = form.querySelector('button[type="submit"]');
-button.disabled = true; // Enable the button on page load
-
+button.disabled = false; 
 
 form.addEventListener('submit', async (e) => {
 
