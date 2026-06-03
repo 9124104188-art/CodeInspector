@@ -20,3 +20,64 @@ textarea{
     resize: vertical;
     padding: 12px;
 }
+h1{
+    margin-bottom: 16px;
+}
+
+label{
+    font-weight: 600;
+}
+
+textarea,select{
+    padding: 12px;
+    boder: 1px solid #cfcfcf;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+button{
+    padding: 12px;
+    border: 0;
+    border-radius: 8px;
+    background-color: #1f6feb;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+button:disabled{
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+}
+
+.output{
+    margin-top: 16px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #fff;
+}
+
+.output h2{
+    margin-top: 0 0 8px 0;
+    font-size: 16px;
+}
+
+#review-text{
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 13px;
+    line-height: 1.4;
+    font-family: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
+}
+
+.output.is-error{
+    border-color: #ffb4b4;
+    background-color: #fff5f5;
+}
+
+.output.is-loading{
+    opacity: 0.85;
+}

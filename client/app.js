@@ -2,6 +2,10 @@ const form = document.querySelector('#review-form');
 const codeInput = document.querySelector('#code-input');
 const languageInput = document.querySelector('#language');
 const output = document.querySelector('#output');
+const reviewText = document.querySelector('#review-text');
+const button = form.querySelector('button[type="submit"]');
+button.disabled = True; // Enable the button on page load
+
 
 form.addEventListener('submit', async (e) => {
 
