@@ -11,7 +11,7 @@ const charCount = document.querySelector('#char-count');
 
 let editor;
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = '';
 
 const monacoLanguageMap = {
   python: 'python',
