@@ -136,6 +136,10 @@ The application is deployed using:
 * Authentication system
 * Team collaboration features
 
+## 🌐 Live Demo
+
+👉 https://codeinspector.onrender.com
+
 ## 👨‍💻 Author
 
 **S. Yeswanth Kumar**
