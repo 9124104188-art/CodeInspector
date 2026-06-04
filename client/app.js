@@ -1,101 +1,206 @@
 const form = document.querySelector('#review-form');
-const codeInput = document.querySelector('#code-input');
 const languageInput = document.querySelector('#language');
 const output = document.querySelector('#output');
+const outputTitle = document.querySelector('#output-title');
 const reviewText = document.querySelector('#review-text');
-const button = form.querySelector('button[type="submit"]');
-button.disabled = false; 
+const reviewBtn = form.querySelector('button[type="submit"]');
+const copyBtn = document.querySelector('#copy-review');
+const explainBtn = document.querySelector('#explain-btn');
+const fileInput = document.querySelector('#code-file');
+const charCount = document.querySelector('#char-count');
 
-codeInput.addEventListener('input', () => {
-    document.querySelector('#char-count').textContent =
-        `${codeInput.value.length} characters`;
+let editor;
+
+const API_BASE_URL = 'http://localhost:3000';
+
+const monacoLanguageMap = {
+  python: 'python',
+  javascript: 'javascript',
+  java: 'java',
+  cpp: 'cpp'
+};
+
+function getCode() {
+  return editor ? editor.getValue() : '';
+}
+
+function setLoading(message) {
+  output.classList.remove('is-error');
+  output.classList.add('is-loading');
+  reviewText.innerHTML = `
+    <div class="loader"></div>
+    <p class="loading-text">${message}</p>
+  `;
+}
+
+function stopLoading() {
+  output.classList.remove('is-loading');
+}
+
+function showError(message) {
+  output.classList.remove('is-loading');
+  output.classList.add('is-error');
+  reviewText.textContent = message;
+}
+
+function updateCharCount() {
+  const code = getCode();
+  const lines = code ? code.split('\n').length : 0;
+  charCount.textContent = `${code.length} characters • ${lines} lines`;
+}
+
+function renderMarkdown(markdownText) {
+  const html = marked.parse(markdownText || 'No output generated.');
+  reviewText.innerHTML = html;
+
+  reviewText.querySelectorAll('pre code').forEach((block) => {
+    hljs.highlightElement(block);
+  });
+}
+
+function enhanceReviewScore() {
+  reviewText.innerHTML = reviewText.innerHTML.replace(
+    /Score:\s*(\d+(?:\.\d+)?\/10)/gi,
+    'Score: <span class="score">$1</span>'
+  );
+}
+
+function setButtonsDisabled(disabled) {
+  reviewBtn.disabled = disabled;
+  explainBtn.disabled = disabled;
+}
+
+languageInput.addEventListener('change', () => {
+  if (!editor) return;
+
+  const selectedLanguage = monacoLanguageMap[languageInput.value] || 'javascript';
+  monaco.editor.setModelLanguage(editor.getModel(), selectedLanguage);
 });
 
-document
-    .querySelector('#code-file')
-    .addEventListener('change', async (e) => {
+require.config({
+  paths: {
+    vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.2/min/vs'
+  }
+});
 
-        const file = e.target.files[0];
+require(['vs/editor/editor.main'], function () {
+  editor = monaco.editor.create(document.getElementById('editor'), {
+    value: '',
+    language: 'python',
+    theme: 'vs-dark',
+    automaticLayout: true,
+    minimap: {
+      enabled: false
+    },
+    fontSize: 14,
+    lineNumbers: 'on',
+    scrollBeyondLastLine: false
+  });
 
-        if (!file) return;
+  editor.onDidChangeModelContent(updateCharCount);
+  updateCharCount();
+});
 
-        const text = await file.text();
+fileInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-        codeInput.value = text;
-
-        document.querySelector('#char-count').textContent =
-            `${text.length} characters`;
-    });
-
-
-
+  const text = await file.text();
+  editor.setValue(text);
+  updateCharCount();
+});
 
 form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    e.preventDefault();
+  const code = getCode();
+  const language = languageInput.value;
 
-    const code = codeInput.value;
-    const language = languageInput.value;
-    output.classList.remove('is-error');
-    output.classList.add('is-loading');
-    button.disabled = true; // Disable the button during review
+  outputTitle.textContent = 'Review Output';
+  reviewText.innerHTML = '';
 
-    if (code.trim()==='') {
-        reviewText.textContent = 'Please paste some code first.';
-        output.classList.remove('is-loading');
-        output.classList.add('is-error');
-        button.disabled = false; // Re-enable the button if no code is provided        
-        return;
-        
-    }
-    else{
-        reviewText.textContent = 'Reviewing code...';
-        console.log({language, codeLength: code.length});
-        try{
-            const response = await fetch('http://localhost:3000/api/review', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ language, code })
-        })
-        if(!response.ok){
-            throw new Error('server error: '+response.status);
-        }
+  if (!code.trim()) {
+    showError('Please paste some code first.');
+    return;
+  }
 
-        const data = await response.json();
-        reviewText.innerHTML =marked.parse(data.review || 'No review generated.');
+  setLoading('Reviewing code...');
+  setButtonsDisabled(true);
 
-        }
-        catch(error){
-            reviewText.textContent = 'Error reviewing code. Please try again.';
-            console.error('Error:', error);
-            output.classList.add('is-error');
-        }
-        finally{
-            output.classList.remove('is-loading');
-            button.disabled = false; // Re-enable the button after review
-        }
-        
-        
-    }
-
-});
-
-document
-    .querySelector('#copy-review')
-    .addEventListener('click', () => {
-
-        navigator.clipboard.writeText(
-            reviewText.innerText
-        );
-
-        alert('Review copied!');
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/review`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ language, code })
     });
 
-    
+    const data = await response.json();
 
+    if (!response.ok) {
+      throw new Error(data.error || `Server error: ${response.status}`);
+    }
 
+    renderMarkdown(data.review);
+    enhanceReviewScore();
+  } catch (error) {
+    console.error('Review error:', error);
+    showError('Error reviewing code. Please check that the backend server is running.');
+  } finally {
+    stopLoading();
+    setButtonsDisabled(false);
+  }
+});
 
+explainBtn.addEventListener('click', async () => {
+  const code = getCode();
+  const language = languageInput.value;
 
+  outputTitle.textContent = 'Explain Output';
+  reviewText.innerHTML = '';
 
+  if (!code.trim()) {
+    showError('Please enter some code first.');
+    return;
+  }
+
+  setLoading('Explaining code...');
+  setButtonsDisabled(true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/explain`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ language, code })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || `Server error: ${response.status}`);
+    }
+
+    renderMarkdown(data.explanation);
+  } catch (error) {
+    console.error('Explain error:', error);
+    showError('Error explaining code. Please check that the backend server is running.');
+  } finally {
+    stopLoading();
+    setButtonsDisabled(false);
+  }
+});
+
+copyBtn.addEventListener('click', async () => {
+  const text = reviewText.innerText.trim();
+
+  if (!text) {
+    alert('Nothing to copy yet.');
+    return;
+  }
+
+  await navigator.clipboard.writeText(text);
+  alert('Output copied!');
+});
