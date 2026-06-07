@@ -22,6 +22,21 @@ const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 function cleanLanguage(language) {
   return (language || 'unknown').toString().replace(/[^a-zA-Z0-9+#-]/g, '').slice(0, 30);
 }
+async function generateWithRetry(prompt, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const result = await model.generateContent(prompt);
+      return result;
+    } catch (error) {
+      if (error.status === 503 && i < retries - 1) {
+        console.log(`Gemini busy. Retry ${i + 1}`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } else {
+        throw error;
+      }
+    }
+  }
+}
 
 function cleanGeminiText(text) {
   return (text || '').trim();
@@ -90,13 +105,15 @@ ${code}
 \`\`\`
 `;
 
-    const result = await model.generateContent(prompt);
+    const result = await generateWithRetry(prompt);
     const reviewText = cleanGeminiText(result.response.text());
 
     return res.json({ review: reviewText });
   } catch (err) {
     console.error('Gemini review error:', err);
-    return res.status(500).json({ error: 'Failed to generate review.' });
+    return res.status(500).json({
+  error: 'AI service is temporarily busy. Please try again in a minute.'
+});
   }
 });
 
@@ -142,7 +159,7 @@ ${code}
 `;
 
 
-    const result = await model.generateContent(prompt);
+    const result = await generateWithRetry(prompt);
     const explanation = cleanGeminiText(result.response.text());
 
     return res.json({ explanation });
